@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Определение</title>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Lora:ital,wght@1,400&display=swap" rel="stylesheet" />
+		<style>
+			    /* Базовая настройка */
+			    body, html {
+			      margin: 0;
+			      padding: 0;
+			      height: 100%;
+			      font-family: 'Inter', sans-serif;
+			      background: #fff;
+			      overflow: hidden;
+			    }
+
+			    /* === ГЛАВНЫЙ КОНТЕЙНЕР === */
+			    .container {
+			      display: grid;
+			      grid-template-columns: 45% 1fr;
+			      height: 100%;
+			      width: 100%;
+			    }
+
+			    /* === ЛЕВАЯ ЧАСТЬ (ТЕКСТ) === */
+			    .text-side {
+			      display: flex;
+			      flex-direction: column;
+			      justify-content: flex-start;
+			      padding: 0px 50px;
+			      margin-bottom: 40px; /* Новый отступ снизу */
+			      margin-top: 40px;
+			      background: #fff;
+			      color: #111;
+			      overflow-y: auto;
+			      word-wrap: break-word;
+			      overflow-wrap: anywhere;
+			      word-break: break-word;
+			      scrollbar-width: thin;
+			      scrollbar-color: #ddd transparent;
+			  }
+
+			    .text-side::-webkit-scrollbar { width: 4px; }
+			    .text-side::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+			    .term-definition {
+			      font-weight: 300;
+			      font-size: 1.1rem;
+			      line-height: 1.6;
+			      color: #333;
+			    }
+
+			    .term-definition p {
+			      margin-bottom: 1.2em;
+			    }
+
+
+			    /* === ПРАВАЯ ЧАСТЬ (ИЗОБРАЖЕНИЕ) === */
+			    .image-side {
+			      position: relative;
+			      width: 100%;
+			      height: 100%;
+			      background: #f0f0f0;
+			      overflow: hidden;
+			    }
+
+			    .image-side img {
+			      width: 100%;
+			      height: 100%;
+			      object-fit: cover;
+			      display: block;
+			      animation: breathe 20s ease-in-out infinite;
+			    }
+
+			/* Анимация "дыхания" */
+			  @keyframes breathe {
+			      0%   { transform: scale(1); }
+			      50%  { transform: scale(1.05); }
+			      100% { transform: scale(1); }
+			  }
+
+
+
+			    /* === МОБИЛЬНАЯ ВЕРСИЯ === */
+			    @media (max-width: 600px) {
+			      .container {
+			        grid-template-columns: 1fr;
+			        grid-template-rows: 250px 1fr;
+			      }
+			      .image-side { order: -1; }
+			      .text-side { padding: 30px; justify-content: flex-start; }
+			    }
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="text-side">
+				<div class="term-definition">
+					<p> <strong style="font-weight: 900;">Плуг</strong> — сельскохозяйственное орудие для вспашки земли. </p> <p> В тексте упоминается как символ традиционного крестьянского труда, от которого голод отрывает людей. </p>
+				</div>
+			</div>
+
+			<div class="image-side">
+				<img src="../img/плуг.png" />
+			</div>
+		</div>
+	</body>
+</html>

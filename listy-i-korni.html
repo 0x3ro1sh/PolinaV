@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Листы и корни</title>
+  <link rel="icon" href="other/favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600&family=Lora:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gap: 1.6rem;
+      --radius: 1rem;
+      --card-width: 800px;
+      --card-height: 500px;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body, html {
+      margin: 0;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .page {
+      width: 100%;
+      background: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .inner {
+      flex: 1;
+      background: #fff;
+      padding: var(--gap);
+      display: grid;
+      grid-template-columns: 1fr 40%;
+      gap: var(--gap);
+      height: 100%;
+      overflow: hidden;
+    }
+    .left_column {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      height: 100%;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .panel {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.06), 0 0 20px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      position: relative;
+    }
+    .top_panel {
+      background: #e0e0e0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 300px;
+    }
+    .nekrasov-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .bg-left {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background-color: #bfbfbf;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+    .bg-right {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background-color: #37475a;
+      z-index: 0;
+    }
+    .card-container {
+      position: relative;
+      width: var(--card-width);
+      height: var(--card-height);
+      z-index: 10;
+      flex-shrink: 0;
+      transform-origin: center;
+      transition: transform 0.3s ease;
+      perspective: 1000px;
+    }
+    .deco-layer-vertical {
+      position: absolute;
+      top: -20px;
+      bottom: -20px;
+      left: 50px;
+      right: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: -1;
+      backdrop-filter: blur(2px);
+    }
+    .deco-layer-horizontal {
+      position: absolute;
+      top: 40px;
+      bottom: 40px;
+      left: -20px;
+      right: -20px;
+      background: rgba(255, 255, 255, 0.15);
+      z-index: -2;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+    .card-inner {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      background: #fff;
+      position: relative;
+      z-index: 1;
+    }
+    .definition-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 10;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.98);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    .definition-layer.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .definition-layer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .panel-left-inner {
+      width: 42%;
+      background-color: #d1d1d1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-placeholder {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 240px;
+      height: 300px;
+      background-color: transparent;
+      border-radius: 50%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .photo-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .name-placeholder {
+      color: #2c2c2c;
+      font-size: 2.2rem;
+      line-height: 1.1;
+      font-weight: bold;
+      margin-bottom: 10px;
+      z-index: 2;
+      position: relative;
+    }
+    .name-placeholder-sub {
+      color: #555;
+      font-size: 1.2rem;
+      line-height: 1.1;
+      font-weight: 300;
+      margin-bottom: 15px;
+      z-index: 2;
+      position: relative;
+    }
+    .panel-right-inner {
+      width: 58%;
+      background-color: #f1f3f6;
+      padding: 40px 40px 30px 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel-right-inner::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(0, 0, 0, 0.1);
+    }
+    .title-placeholder {
+      font-size: 2.2rem;
+      line-height: 1;
+      font-weight: 900;
+      color: #2c2c2c;
+      margin-bottom: 10px;
+      display: block;
+      width: 100%;
+      flex-shrink: 0;
+    }
+    .meta-placeholder {
+      font-size: 1.1rem;
+      color: #5a5a5a;
+      font-weight: 300;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      display: block;
+      width: 100%;
+      flex-shrink: 0;
+      border-bottom: 0.6px solid #e3dede;
+    }
+    .quotation-card {
+      background: #f1f3f6;
+      border-radius: var(--radius);
+      padding: 1rem 1.4rem;
+      box-shadow: 0px 0px 10px rgba(229, 229, 229, 0.81);
+      margin-bottom: 20px;
+      overflow-y: auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .quotation-card .text {
+      font-size: 1rem;
+      line-height: 1.4;
+      color: #2c2c2c;
+    }
+    .quotation-card .text p {
+      margin: 0.5em 0;
+    }
+    .quotation-card .source {
+      display: block;
+      text-align: right;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #6a6a6a;
+      text-transform: uppercase;
+    }
+    .rails-placeholder {
+      margin-top: auto;
+      width: 100%;
+      height: 30px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .rail-track {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background-color: #bbb;
+    }
+    .rail-top {
+      top: 8px;
+      transform: perspective(100px) rotateX(20deg);
+    }
+    .rail-bottom {
+      bottom: 8px;
+      transform: perspective(100px) rotateX(20deg);
+    }
+    .sleeper {
+      width: 8px;
+      height: 30px;
+      background-color: #bbb;
+      margin: 0 15px;
+      transform: skewX(-20deg);
+    }
+    .reader_wrap {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    #reader_container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #fff;
+      box-shadow: -8px 0 20px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+    .reader_tools {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      background: #373737;
+      padding: 14px 18px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      gap: 5%;
+      border-bottom: 0.6px solid #f3f1f1;
+    }
+    .reader_tools .item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+    .reader_tools .item .title {
+      color: #fff;
+      white-space: nowrap;
+    }
+    .reader_tools .icons {
+      display: flex;
+    }
+    .reader_tools .icons a svg.icon-font {
+      width: 40px;
+      height: 28px;
+    }
+    .reader_tools .icons a {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .reader_tools .icons a:hover {
+      transform: translateY(-1px);
+    }
+    .icon {
+      fill: currentColor;
+      color: #fff;
+      transition: color 0.2s;
+    }
+    .icon-columns {
+      width: 37px;
+      height: 37px;
+    }
+    .icon-font {
+      width: 51px;
+      height: 35px;
+    }
+    .reader_block {
+      background: #fff;
+      padding: 22px;
+      font-size: 1rem;
+      line-height: 1.6;
+      column-gap: 44px;
+      color: #111;
+      flex: 1 1 auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+      transition: font-size .2s;
+    }
+    .reader_block p {
+      margin-bottom: 1.25rem;
+      text-align: justify;
+    }
+    .reader_block h1, .reader_block h2, .reader_block h3 {
+      margin: 1.5rem 0 1rem;
+    }
+    .reader_block h1 {
+      font-size: 2.2rem;
+    }
+    .reader_block h2 {
+      font-size: 1.8rem;
+    }
+    .reader_block h3 {
+      font-size: 1.5rem;
+    }
+    .word {
+      text-decoration: none;
+      border-bottom: 1px dashed #38ACF7;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      color: inherit;
+    }
+    .word:hover {
+      color: #38ACF7;
+      border-bottom-color: #38ACF7;
+    }
+    @media (max-width: 1600px) {
+      .card-container { transform: scale(0.9); }
+    }
+    @media (max-width: 1400px) {
+      .card-container { transform: scale(0.8); }
+    }
+    @media (max-width: 1200px) {
+      .card-container { transform: scale(0.7); }
+    }
+    @media (max-width: 1100px) {
+      body, html { overflow: auto; height: auto; }
+      .page { height: auto; min-height: 100vh; }
+      .inner { display: block; height: auto; overflow: visible; padding: var(--gap); }
+      .left_column { height: auto; margin-bottom: var(--gap); width: 100%; }
+      .panel.top_panel { height: 450px; }
+      .card-container { transform: scale(0.75); }
+      .panel { height: auto; }
+      .reader_wrap { height: 80vh; }
+      .reader_tools { gap: 10px; }
+      .reader_tools .item { flex: 1 1 auto; }
+      .reader_tools .item .title { display: none; }
+    }
+    @media (max-width: 800px) {
+      .panel.top_panel { height: 400px; }
+      .card-container { transform: scale(0.65); }
+    }
+    @media (max-width: 600px) {
+      .panel.top_panel { height: 320px; }
+      .card-container { transform: scale(0.5); }
+    }
+    @media (max-width: 450px) {
+      .panel.top_panel { height: 260px; }
+      .card-container { transform: scale(0.42); }
+      .reader_block { padding: 15px; }
+    }
+    .burger {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 42px;
+      height: 42px;
+      background: rgba(0, 0, 0, 0.55);
+      border: none;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 50;
+    }
+    .burger span {
+      height: 2px;
+      background: #fff;
+      width: 100%;
+      display: block;
+    }
+    .side-menu {
+      position: absolute;
+      top: 16px;
+      left: calc(16px + 42px + 6px);
+      min-width: 220px;
+      padding: 14px 16px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      transform: translateX(-10px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+    }
+    .side-menu.open {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .side-menu li {
+      margin-bottom: 12px;
+    }
+    .side-menu a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+    .side-menu a:hover {
+      color: #fff;
+    }
+    .music-player {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1 1 auto;
+    }
+    .play-btn {
+      width: auto;
+      height: auto;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .play-btn:hover {
+      transform: scale(1.1);
+    }
+    #seekBar {
+      flex: 1;
+      height: 4px;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    #seekBar::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #38ACF7;
+    }
+    .time-display {
+      font-size: 0.9rem;
+      color: #fff;
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .dots-nav {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 50;
+      pointer-events: auto;
+    }
+    .dots-nav .dot {
+      font-size: 25px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.5);
+      transition: color 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .dots-nav .dot:hover {
+      color: #38ACF7;
+      transform: scale(1.2);
+    }
+    .dots-nav .dot.active {
+      color: #fff;
+      font-weight: bold;
+      transform: scale(1.3);
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="inner">
+    <div class="left_column">
+      <div class="panel top_panel">
+        <button class="burger" aria-label="Меню">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="side-menu">
+          <ul>
+            <li><a href="zheleznaya-doroga.html">Железная дорога (Некрасов Н. А.)</a></li>
+            <li><a href="svinja-pod-dubom.html">Свинья под дубом (Крылов И. А.)</a></li>
+            <li><a href="podvig-otroka-kievlyanina-i-khitrost-voevody-preticha.html">Подвиг отрока-киевлянина и хитрость воеводы Претича (Нестор Летописец)</a></li>
+          </ul>
+        </nav>
+        <div class="nekrasov-wrapper">
+          <div class="bg-left"></div>
+          <div class="bg-right"></div>
+          <div class="card-container">
+            <div class="deco-layer-vertical"></div>
+            <div class="deco-layer-horizontal"></div>
+            <div class="definition-layer" id="defLayer">
+              <iframe id="defFrame" src=""></iframe>
+            </div>
+            <div class="card-inner">
+              <div class="panel-left-inner">
+                <div class="photo-placeholder">
+                  <video width="250" autoplay muted playsinline>
+                    <source src="video/zheleznaya-doroga.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="name-placeholder">Крылов И.А.</div>
+                <div class="name-placeholder-sub">1769 – 1844</div>
+              </div>
+              <div class="panel-right-inner">
+                <div class="title-placeholder">Листы и корни</div>
+                <div class="meta-placeholder">Басня • 1811</div>
+                <div class="quotation-card">
+                  <div class="text">
+                    <p>
+                      Да только помните ту разницу меж нас:
+                      <br /> Что с новою весной лист новый народится,
+                      <br /> А если корень иссушится, —
+                      <br /> Не станет дерева, ни вас».
+                    </p>
+                    <span class="source">Мораль басни</span>
+                  </div>
+                </div>
+                <div class="rails-placeholder">
+                  <div class="rail-track rail-top"></div>
+                  <div class="rail-track rail-bottom"></div>
+                  <div class="sleeper"></div>
+                  <div class="sleeper"></div>
+                  <div class="sleeper"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dots-nav">
+          <a class="dot" href="zheleznaya-doroga.html">●</a>
+          <a class="dot" href="svinja-pod-dubom.html">●</a>
+          <a class="dot active" href="javascript:void(0)">●</a>
+          <a class="dot" href="podvig-otroka-kievlyanina-i-khitrost-voevody-preticha.html">●</a>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="reader_wrap">
+        <div id="reader_container">
+          <div class="reader_tools">
+            <div class="item music-player">
+              <span class="title">Аудио</span>
+              <button class="play-btn" id="playBtn" aria-label="Play / Pause">
+                <svg class="icon icon-font" id="playIcon">
+                  <use href="#icon-play"></use>
+                </svg>
+              </button>
+              <input type="range" id="seekBar" min="0" max="100" value="0" step="0.1" />
+              <div class="time-display">
+                <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+              </div>
+            </div>
+            <audio id="audio">
+              <source src="audio/listy-i-korni.mp3" type="audio/mpeg">
+            </audio>
+            <div class="item">
+              <span class="title">Размер текста</span>
+              <span class="icons">
+                  <a class="font_btn" data-var="minus" href="#" title="Уменьшить">
+                    <svg class="icon icon-font"><use href="#icon-font-minus"></use></svg>
+                  </a>
+                  <a class="font_btn" data-var="plus" href="#" title="Увеличить">
+                    <svg class="icon icon-font"><use href="#icon-font-plus"></use></svg>
+                  </a>
+                </span>
+            </div>
+          </div>
+          <div id="reader_block" class="reader_block columns1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  (function() {
+    if (location.pathname.includes('mobile.html')) return;
+    const isMobileUA = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+    const isSmallScreen = window.matchMedia('(max-width: 900px)').matches;
+    if (isMobileUA || isSmallScreen) {
+      window.location.replace('mobile.html');
+    }
+  })();
+  fetch('other/icons.svg')
+          .then(r => r.text())
+          .then(d => document.body.insertAdjacentHTML('afterbegin', d))
+          .catch(console.error);
+  const phrases = [
+    { text: ['долине'], file: 'words/долина.html' },
+    { text: ['долины'], file: 'words/долина.html' },
+    { text: ['зефирами'], file: 'words/зефир.html' },
+    { text: ['зефирам'], file: 'words/зефир.html' },
+    { text: ['зефиры'], file: 'words/зефир.html' },
+    { text: ['густотой'], file: 'words/густота.html' },
+    { text: ['толковали'], file: 'words/толковать.html' },
+    { text: ['краса'], file: 'words/краса.html' },
+    { text: ['раскидисто'], file: 'words/раскидистый.html' },
+    { text: ['величаво'], file: 'words/величаво.html' },
+    { text: ['зноя'], file: 'words/зной.html' },
+    { text: ['пастуха'], file: 'words/пастух.html' },
+    { text: ['странника'], file: 'words/странник.html' },
+    { text: ['пастушек'], file: 'words/пастушка.html' },
+    { text: ['примолвить'], file: 'words/примолвить.html' },
+    { text: ['смиренно'], file: 'words/смиренно.html' },
+    { text: ['надменно'], file: 'words/надменно.html' },
+    { text: ['залепетали'], file: 'words/залепетать.html' },
+    { text: ['народится'], file: 'words/народится.html' },
+    { text: ['иссушится'], file: 'words/иссушиться.html' }
+  ];
+  phrases.sort((a, b) => b.text.length - a.text.length);
+  fetch('md/listy-i-korni.md')
+          .then(r => r.text())
+          .then(md => {
+            const block = document.getElementById('reader_block');
+            const quote = document.querySelector('.quotation-card .text');
+            block.innerHTML = marked.parse(md);
+            const process = (el) => {
+              let html = el.innerHTML;
+              phrases.forEach(p => {
+                const regex = new RegExp('(' + p.text.join('(\\s|<br\\s*/?>|&nbsp;)+') + ')', 'gi');
+                html = html.replace(regex, `<span class="word" data-definition="${encodeURIComponent(p.file)}">$1</span>`);
+              });
+              el.innerHTML = html;
+            };
+            process(block);
+            if (quote) process(quote);
+          })
+          .catch(() => {
+            document.getElementById('reader_block').innerHTML = '<p style="text-align:center;color:#999">Текст не загружен</p>';
+          });
+  const defLayer = document.getElementById('defLayer');
+  const defFrame = document.getElementById('defFrame');
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('word')) {
+      e.preventDefault();
+      defFrame.src = decodeURIComponent(e.target.dataset.definition);
+      defLayer.classList.add('active');
+      return;
+    }
+    const cardContainer = document.querySelector('.card-container');
+    if (defLayer.classList.contains('active')) {
+      if (!cardContainer.contains(e.target)) {
+        defLayer.classList.remove('active');
+        setTimeout(() => defFrame.src = '', 300);
+      }
+    }
+  });
+  let fontEm = 1.00;
+  document.querySelectorAll('.font_btn').forEach(b => b.onclick = e => {
+    e.preventDefault();
+    fontEm = Math.max(0.5, Math.min(3, fontEm + (b.dataset.var === 'plus' ? 0.25 : -0.25)));
+    document.getElementById('reader_block').style.fontSize = fontEm + 'em';
+  });
+  const burger = document.querySelector('.burger');
+  const menu = document.querySelector('.side-menu');
+  burger.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    if (!menu.contains(e.target) && !burger.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const seekBar = document.getElementById('seekBar');
+  const currentTimeEl = document.getElementById('currentTime');
+  const durationEl = document.getElementById('duration');
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      playIcon.innerHTML = '<use href="#icon-pause"></use>';
+    } else {
+      audio.pause();
+      playIcon.innerHTML = '<use href="#icon-play"></use>';
+    }
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    durationEl.textContent = formatTime(audio.duration);
+  });
+  audio.addEventListener('timeupdate', () => {
+    currentTimeEl.textContent = formatTime(audio.currentTime);
+    if (audio.duration) {
+      seekBar.value = (audio.currentTime / audio.duration) * 100;
+    }
+  });
+  seekBar.addEventListener('input', () => {
+    if (audio.duration) {
+      audio.currentTime = (seekBar.value / 100) * audio.duration;
+    }
+  });
+  audio.addEventListener('ended', () => {
+    playIcon.innerHTML = '<use href="#icon-play"></use>';
+    seekBar.value = 0;
+  });
+</script>
+</body>
+</html>
