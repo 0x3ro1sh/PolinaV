@@ -698,14 +698,16 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
+  /*
   (function() {
-    if (location.pathname.includes('mobile.html')) return;
-    const isMobileUA = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
-    const isSmallScreen = window.matchMedia('(max-width: 900px)').matches;
-    if (isMobileUA || isSmallScreen) {
-      window.location.replace('mobile.html');
-    }
+      if (location.pathname.includes('mobile.html')) return;
+      const isMobileUA = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+      const isSmallScreen = window.matchMedia('(max-width: 900px)').matches;
+      if (isMobileUA || isSmallScreen) {
+        window.location.replace('mobile.html');
+      }
   })();
+  */
   fetch('other/icons.svg')
           .then(r => r.text())
           .then(d => document.body.insertAdjacentHTML('afterbegin', d))
